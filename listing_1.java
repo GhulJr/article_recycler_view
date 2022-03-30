@@ -12,7 +12,7 @@ ViewHolder tryGetViewHolderForPositionByDeadline(int position,boolean dryRun, lo
         fromScrapOrHiddenOrCache = holder != null;
     }
     if (holder == null) {
-				// BANANA 1 - first try to obtain the view from first-level cache
+	// BANANA 1 - first try to obtain the view from first-level cache
         holder = getScrapOrHiddenOrCachedHolderForPosition(position, dryRun);
         if (holder != null) {
             if (!validateViewHolderForOffsetPosition(holder)) {
@@ -42,7 +42,7 @@ ViewHolder tryGetViewHolderForPositionByDeadline(int position,boolean dryRun, lo
 
         final int type = mAdapter.getItemViewType(offsetPosition);
         if (mAdapter.hasStableIds()) {
-						// BANANA 2 - second try to obtain the view from first-level cache
+            // BANANA 2 - second try to obtain the view from first-level cache
             holder = getScrapOrCachedViewForId(mAdapter.getItemId(offsetPosition),
                 type, dryRun);
             if (holder != null) {
@@ -72,7 +72,7 @@ ViewHolder tryGetViewHolderForPositionByDeadline(int position,boolean dryRun, lo
                 Log.d(TAG, "tryGetViewHolderForPositionByDeadline("
                         + position + ") fetching from shared pool");
             }
-						// BANANA 3 - last hope to obtain view, this time from RecycledViewPool
+	    // BANANA 3 - last hope to obtain view, this time from RecycledViewPool
             holder = getRecycledViewPool().getRecycledView(type);
             if (holder != null) {
                 holder.resetInternal();
@@ -87,7 +87,7 @@ ViewHolder tryGetViewHolderForPositionByDeadline(int position,boolean dryRun, lo
                 && !mRecyclerPool.willCreateInTime(type, start, deadlineNs)) {
                 return null;
             }
-						// BANANA 4 - new view is created
+	    // BANANA 4 - new view is created
             holder = mAdapter.createViewHolder(RecyclerView.this, type);
             if (ALLOW_THREAD_GAP_WORK) {
                 // only bother finding nested RV if prefetching
