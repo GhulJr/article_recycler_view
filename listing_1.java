@@ -12,7 +12,7 @@ ViewHolder tryGetViewHolderForPositionByDeadline(int position,boolean dryRun, lo
         fromScrapOrHiddenOrCache = holder != null;
     }
     if (holder == null) {
-	// BANANA 1 - first try to obtain the view from first-level cache
+   	// BANANA 1 - first try to obtain the view from first-level cache
         holder = getScrapOrHiddenOrCachedHolderForPosition(position, dryRun);
         if (holder != null) {
             if (!validateViewHolderForOffsetPosition(holder)) {
@@ -42,7 +42,7 @@ ViewHolder tryGetViewHolderForPositionByDeadline(int position,boolean dryRun, lo
 
         final int type = mAdapter.getItemViewType(offsetPosition);
         if (mAdapter.hasStableIds()) {
-            // BANANA 2 - second try to obtain the view from first-level cache
+	    // BANANA 2 - second try to obtain the view from first-level cache
             holder = getScrapOrCachedViewForId(mAdapter.getItemId(offsetPosition),
                 type, dryRun);
             if (holder != null) {
@@ -90,7 +90,6 @@ ViewHolder tryGetViewHolderForPositionByDeadline(int position,boolean dryRun, lo
 	    // BANANA 4 - new view is created
             holder = mAdapter.createViewHolder(RecyclerView.this, type);
             if (ALLOW_THREAD_GAP_WORK) {
-                // only bother finding nested RV if prefetching
                 RecyclerView innerView = findNestedRecyclerView(holder.itemView);
                 if (innerView != null) {
                     holder.mNestedRecyclerView = new WeakReference<>(innerView);
@@ -104,45 +103,5 @@ ViewHolder tryGetViewHolderForPositionByDeadline(int position,boolean dryRun, lo
             }
         }
     }
-
-    if (fromScrapOrHiddenOrCache && !mState.isPreLayout() && holder
-            .hasAnyOfTheFlags(ViewHolder.FLAG_BOUNCED_FROM_HIDDEN_LIST)) {
-        holder.setFlags(0, ViewHolder.FLAG_BOUNCED_FROM_HIDDEN_LIST);
-        if (mState.mRunSimpleAnimations) {
-            int changeFlags = ItemAnimator
-                    .buildAdapterChangeFlagsForAnimations(holder);
-            changeFlags |= ItemAnimator.FLAG_APPEARED_IN_PRE_LAYOUT;
-            final ItemHolderInfo info = mItemAnimator.recordPreLayoutInformation(mState,
-                holder, changeFlags, holder.getUnmodifiedPayloads());
-            recordAnimationInfoIfBouncedHiddenView(holder, info);
-        }
-    }
-
-    boolean bound = false;
-    if (mState.isPreLayout() && holder.isBound()) {
-        holder.mPreLayoutPosition = position;
-    } else if (!holder.isBound() || holder.needsUpdate() || holder.isInvalid()) {
-        if (DEBUG && holder.isRemoved()) {
-            throw new IllegalStateException("Removed holder should be bound and it should"
-                    + " come here only in pre-layout. Holder: " + holder
-                    + exceptionLabel());
-        }
-        final int offsetPosition = mAdapterHelper.findPositionOffset(position);
-        bound = tryBindViewHolderByDeadline(holder, offsetPosition, position, deadlineNs);
-    }
-
-    final ViewGroup.LayoutParams lp = holder.itemView.getLayoutParams();
-    final LayoutParams rvLayoutParams;
-    if (lp == null) {
-        rvLayoutParams = (LayoutParams) generateDefaultLayoutParams();
-        holder.itemView.setLayoutParams(rvLayoutParams);
-    } else if (!checkLayoutParams(lp)) {
-        rvLayoutParams = (LayoutParams) generateLayoutParams(lp);
-        holder.itemView.setLayoutParams(rvLayoutParams);
-    } else {
-        rvLayoutParams = (LayoutParams) lp;
-    }
-    rvLayoutParams.mViewHolder = holder;
-    rvLayoutParams.mPendingInvalidate = fromScrapOrHiddenOrCache && bound;
-    return holder;
+    // Other things happens, but let's skip them ;)
 }
